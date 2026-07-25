@@ -1,0 +1,1 @@
+export {default as TuuraaLogo} from "./tuuraaicon_white.png"
