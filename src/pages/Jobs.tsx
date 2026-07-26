@@ -5,8 +5,7 @@ import { supabase } from "../constants/supabaseClient";
 import { fmtDate } from "../constants/constants";
 import { Toast } from "../components/Toast";
 import { StatCard } from "../components/StatCard";
-import { AddCoordinatorsModal } from "../components/modals/AddCoordinatorsModal";
-import { EditCoordinatorModal } from "../components/modals/EditCoordinatorModal";
+
 import {
   FiSearch,
   FiX,
@@ -17,12 +16,11 @@ import {
 } from "react-icons/fi";
 import { AddJobsModal } from "../components/modals/AddJobsModal";
 import { MdWorkOutline } from "react-icons/md";
-import { Badge } from "../components/Badge";
+
 import { EditManifestModal } from "../components/modals/EditManifestModal";
 import { AssignOperatorModal } from "../components/AddOperatorModal";
 import { ManifestDrawer } from "../components/ManifestDrawer";
 import type { Manifests } from "../components/types/Types";
-import type { DropEntry } from "../components/types/Types";
 
 const DataTable = (RDT as any).default?.default ?? (RDT as any).default;
 type ToastState = { message: string; type: "success" | "error" } | null;
@@ -48,7 +46,7 @@ const ActionBtn = ({
   </button>
 );
 
-const formatDateTime = (date) => {
+const formatDateTime = (date: string | null | undefined) => {
   if (!date) return "—";
 
   return new Date(date).toLocaleString("en-GB", {
@@ -77,6 +75,41 @@ const Jobs = () => {
     setTimeout(() => setToast(null), 4000);
   };
 
+  // const fetchManifests = useCallback(async () => {
+  //   setLoading(true);
+  //   try {
+  //     const { data, error } = await supabase
+  //       .from("manifests")
+  //       .select(
+  //         `
+  //       id,
+  //       ref_number,
+  //       created_at,
+  //       drops_count,
+  //       operator_id,
+  //       status,
+  //       out_for_delivery_at,
+  //       completed_at,
+  //       client:clients ( business_name ),
+  //       operator:operators!manifests_operator_id_fkey ( full_name ),
+  //       subscription:client_subscriptions!manifests_subscription_id_fkey (
+  //         id, drops_used,
+  //         tier:package_tiers!client_subscriptions_tier_id_fkey ( name, monthly_drops )
+  //       )
+  //     `,
+  //       )
+  //       .order("created_at", { ascending: false });
+
+  //     if (error) throw error;
+  //     setJobs((data ?? []) as Manifests[]);
+  //   } catch (err) {
+  //     console.error("Failed to fetch manifests:", err);
+  //     showToast("Failed to load manifests", "error");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // }, []);
+
   const fetchManifests = useCallback(async () => {
     setLoading(true);
     try {
@@ -84,25 +117,41 @@ const Jobs = () => {
         .from("manifests")
         .select(
           `
-        id,
-        ref_number,
-        created_at,
-        drops_count,
-        operator_id,
-        out_for_delivery_at,
-        completed_at,
-        client:clients ( business_name ),
-        operator:operators!manifests_operator_id_fkey ( full_name ),
-        subscription:client_subscriptions!manifests_subscription_id_fkey (
-          id, drops_used,
-          tier:package_tiers!client_subscriptions_tier_id_fkey ( name, monthly_drops )
-        )
-      `,
+id,
+ref_number,
+created_at,
+drops_count,
+operator_id,
+subscription_id,
+status,
+out_for_delivery_at,
+completed_at,
+client:clients ( business_name ),
+operator:operators!manifests_operator_id_fkey ( full_name ),
+subscription:client_subscriptions!manifests_subscription_id_fkey (
+  id, drops_used,
+  tier:package_tiers!client_subscriptions_tier_id_fkey ( name, monthly_drops )
+)
+`,
         )
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      setJobs((data ?? []) as Manifests[]);
+
+      const normalized = (data ?? []).map((row: any) => ({
+        ...row,
+        client: Array.isArray(row.client)
+          ? (row.client[0] ?? null)
+          : row.client,
+        operator: Array.isArray(row.operator)
+          ? (row.operator[0] ?? null)
+          : row.operator,
+        subscription: Array.isArray(row.subscription)
+          ? (row.subscription[0] ?? null)
+          : row.subscription,
+      }));
+
+      setJobs(normalized as Manifests[]);
     } catch (err) {
       console.error("Failed to fetch manifests:", err);
       showToast("Failed to load manifests", "error");

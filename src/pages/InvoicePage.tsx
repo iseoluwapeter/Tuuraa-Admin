@@ -5,11 +5,11 @@ import { primaryBtn, inputStyle } from "../components/constants";
 import { CreateInvoiceModal } from "../components/modals/CreateInvoiceModal";
 import { STATUS_META } from "../constants/constants";
 import { InvoiceDetailModal } from "../components/modals/InvoiceDetailModal";
-import type { Client, Invoice } from "../components/types/Types";
+import type { ClientSummary, Invoice } from "../components/types/Types";
 
 export const InvoicePage = () => {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
-  const [clients, setClients] = useState<Client[]>([]);
+  const [clients, setClients] = useState<ClientSummary[]>([]);
   const [loading, setLoading] = useState(true);
   const [showCreate, setShowCreate] = useState(false);
   const [selected, setSelected] = useState<Invoice | null>(null);
@@ -28,7 +28,9 @@ export const InvoicePage = () => {
           .from("invoices")
           .select("*")
           .order("created_at", { ascending: false }),
-        supabase.from("clients").select("id, business_name, email"),
+        supabase
+          .from("clients")
+          .select("id, business_name, email, default_pickup_address"),
       ]);
       setInvoices(invData || []);
       console.log(invData);

@@ -6,11 +6,11 @@ import Users from "./pages/Client";
 import Login from "./pages/Login";
 import Operators from "./pages/Operators";
 import ProtectedRoute from "./components/ProtectedRoute";
-import Coordinators from "./pages/Coordinators";
+// import Coordinators from "./pages/Coordinators";
 import { initAuth } from "./store/authInitializer";
 import Jobs from "./pages/Jobs";
 import { InvoicePage } from "./pages/InvoicePage";
-import Manifests from "./pages/Manifests";
+// import Manifests from "./pages/Manifests";
 // import DropLedger from "./pages/DropLedger";
 
 const App = () => {
@@ -33,14 +33,14 @@ const App = () => {
           }
         />
 
-        <Route
+        {/* <Route
           path="/coordinators"
           element={
             <ProtectedRoute allowedRoles={["admin", "coordinator"]}>
               <Coordinators />
             </ProtectedRoute>
           }
-        />
+        /> */}
 
         <Route
           path="/clients"
@@ -78,16 +78,14 @@ const App = () => {
           }
         />
 
-        <Route
+        {/* <Route
           path="/manifests"
           element={
             <ProtectedRoute allowedRoles={["admin", "coordinator"]}>
               <Manifests />
             </ProtectedRoute>
           }
-        />
-
-  
+        /> */}
       </Route>
     </Routes>
   );

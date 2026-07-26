@@ -3,14 +3,13 @@ import { supabase } from "../../constants/supabaseClient";
 import { inputStyle } from "../constants";
 import {
   ModalShell,
-  FieldGroup,
-  Field,
   ErrorBanner,
   ModalFooter,
   CancelButton,
   SubmitButton,
 } from "./AddOperatorModal";
 import { FiPlus, FiTrash2 } from "react-icons/fi";
+import type { Manifests } from "../types/Types";
 
 type DropInput = {
   recipient_name: string;
@@ -24,22 +23,9 @@ type ExistingDrop = DropInput & {
   status: "pending" | "delivered" | "failed";
 };
 
-type Manifest = {
-  id: string;
-  ref_number: string;
-  drops_count: number;
-  subscription_id: string;
-  subscription: {
-    drops_used: number;
-    tier: {
-      monthly_drops: number;
-    };
-  } | null;
-};
-
 type Props = {
   visible: boolean;
-  manifest: Manifest | null;
+  manifest: Manifests | null;
   onClose: () => void;
   onSuccess: () => void;
 };
@@ -103,7 +89,7 @@ export const EditManifestModal = ({
 
   // ── New drop helpers ───────────────────────────────────────────────────
   const addDrop = () => {
-    const totalAfterAdd = existingDrops.length + newDrops.length + 1;
+    // const totalAfterAdd = existingDrops.length + newDrops.length + 1;
     if (remainingAllowance !== null && newDrops.length >= remainingAllowance) {
       setError(
         `Cannot add more drops. Only ${remainingAllowance} drop${remainingAllowance === 1 ? "" : "s"} remaining in this subscription.`,
@@ -157,7 +143,7 @@ export const EditManifestModal = ({
         drop_number: existingDrops.length + i + 1,
         recipient_name: d.recipient_name,
         recipient_phone: d.recipient_phone,
-        address: d.address,
+        address: d.delivery_address,
       }));
 
       const { error: dropsError } = await supabase

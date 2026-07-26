@@ -9,6 +9,7 @@ import { EditClientModal } from "../components/modals/EditClientModal";
 import { AddClientModal } from "../components/modals/AddClientModal";
 import { FiUsers } from "react-icons/fi";
 import { ClientRenewModal } from "../components/modals/ClientRenewModal";
+import type { client } from "../components/types/Types";
 
 const DataTable = (RDT as any).default?.default ?? (RDT as any).default;
 type ToastState = { message: string; type: "success" | "error" } | null;
@@ -16,19 +17,6 @@ type ToastState = { message: string; type: "success" | "error" } | null;
 // Matches exactly what the select() below returns — keep these two in
 // sync. Field names mirror the actual `clients` table columns
 // (snake_case), not the old Operators-table shape this was copied from.
-type Client = {
-  id: string;
-  business_name: string;
-  email: string;
-  phone: string | null;
-  default_pickup_address: string | null;
-  account_manager: { full_name: string } | null;
-  client_subscriptions: {
-    id: string;
-    status: string;
-    package_tiers: { name: string } | null;
-  }[];
-};
 
 // ── Action button
 const ActionBtn = ({
@@ -72,15 +60,15 @@ const ActionBtn = ({
 
 // ── Main component
 const Client = () => {
-  const [clients, setClients] = useState<Client[]>([]);
+  const [clients, setClients] = useState<client[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [toast, setToast] = useState<ToastState>(null);
 
   const [addVisible, setAddVisible] = useState(false);
-  const [editTarget, setEditTarget] = useState<Client | null>(null);
-  const [deleteTarget, setDeleteTarget] = useState<Client | null>(null);
-  const [renewTarget, setRenewTarget] = useState<Client | null>(null);
+  const [editTarget, setEditTarget] = useState<client | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<client | null>(null);
+  const [renewTarget, setRenewTarget] = useState<client | null>(null);
 
   const showToast = (message: string, type: "success" | "error") => {
     setToast({ message, type });
@@ -94,28 +82,27 @@ const Client = () => {
         .from("clients")
         .select(
           `
+  id,
+  business_name,
+  email,
+  phone,
+  default_pickup_address,
+  account_manager_id,
+  account_manager:users!account_manager_id (
+    full_name
+  ),
+  client_subscriptions (
     id,
-    business_name,
-    email,
-    phone,
-    default_pickup_address,
-    account_manager:users!account_manager_id (
-      full_name
-    ),
-    client_subscriptions (
-      id,
-      status,
-      package_tiers (
-        name
-      )
-    )
-  `,
+    status,
+    package_tiers(name)
+  )
+`,
         )
         .order("created_at", { ascending: false });
 
       if (error) throw error;
-      setClients((data ?? []) as unknown as Client[]);
-      console.log(data)
+      setClients((data ?? []) as unknown as client[]);
+      console.log(data);
     } catch (err) {
       console.error("Failed to fetch clients:", err);
       showToast("Failed to load clients", "error");
@@ -159,7 +146,7 @@ const Client = () => {
     );
   });
 
-  const columns: TableColumn<Client>[] = [
+  const columns: TableColumn<client>[] = [
     {
       name: "#",
       cell: (_, i) => (

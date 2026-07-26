@@ -13,7 +13,7 @@ import { useAuthStore } from "../../store/authStore";
 import { supabase } from "../../constants/supabaseClient";
 import { fmt } from "../../constants/constants";
 import { InvoiceTemplate } from "../InvoiceTemplate";
-import type { Client, InvoiceItem, Invoice } from "../types/Types";
+import type { ClientSummary, InvoiceItem, Invoice } from "../types/Types";
 
 const newItem = (): InvoiceItem => ({
   id: crypto.randomUUID(),
@@ -37,7 +37,7 @@ export const CreateInvoiceModal = ({
   onClose,
   onSuccess,
 }: {
-  clients: Client[];
+  clients: ClientSummary[];
   onClose: () => void;
   onSuccess: () => void;
 }) => {
@@ -88,51 +88,6 @@ export const CreateInvoiceModal = ({
     win.print();
     win.close();
   };
-
-  // const handleSubmit = async (saveStatus: Invoice["status"] = "draft") => {
-  //   setError(null);
-  //   if (!form.client_id) {
-  //     setError("Please select a client.");
-  //     return;
-  //   }
-  //   if (!form.due_date) {
-  //     setError("Due date is required.");
-  //     return;
-  //   }
-  //   if (form.items.some((i) => !i.description.trim())) {
-  //     setError("All line items must have a description.");
-  //     return;
-  //   }
-
-  //   setSubmitting(true);
-  //   try {
-  //     // Generate invoice number from DB
-  //     const { data: invNum, error: numErr } = await supabase.rpc(
-  //       "generate_invoice_number",
-  //     );
-  //     if (numErr) throw numErr;
-
-  //     const { error: insErr } = await supabase.from("invoices").insert({
-  //       invoice_number: invNum,
-  //       client_id: form.client_id,
-  //       issue_date: form.issue_date,
-  //       due_date: form.due_date,
-  //       tax_rate: form.tax_rate,
-  //       notes: form.notes,
-  //       status: saveStatus,
-  //       items: form.items,
-  //       subtotal,
-  //       total,
-  //       created_by: user?.id,
-  //     });
-  //     if (insErr) throw insErr;
-  //     onSuccess();
-  //   } catch (err: any) {
-  //     setError(err?.message ?? "Something went wrong.");
-  //   } finally {
-  //     setSubmitting(false);
-  //   }
-  // };
 
   const handleSubmit = async (saveStatus: Invoice["status"] = "draft") => {
     setError(null);

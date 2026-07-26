@@ -1,4 +1,4 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import { supabase } from "../../constants/supabaseClient";
 import { inputStyle } from "../constants";
 import {
@@ -199,9 +199,8 @@ export const AddJobsModal = ({ visible, onClose, onSuccess }: Props) => {
     setSubmitting(true);
     try {
       // 1. Generate manifest_ref
-      const { data: refData, error: refError } = await supabase.rpc(
-        "generate_job_ref",
-      );
+      const { data: refData, error: refError } =
+        await supabase.rpc("generate_job_ref");
       if (refError) throw refError;
 
       // 2. Insert manifest

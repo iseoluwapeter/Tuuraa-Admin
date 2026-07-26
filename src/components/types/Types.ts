@@ -5,19 +5,38 @@ export type InvoiceItem = {
   unit_price: number;
 };
 
-export type Client = {
+export type client = {
   id: string;
   business_name: string;
-  email: string;
-  phone: string | null;
+  email: string | null;
+  phone: string;
   default_pickup_address: string | null;
+
+  account_manager_id: string | null;
+
+  account_manager: {
+    full_name: string;
+  } | null;
+
+  client_subscriptions: {
+    id: string;
+    status: string;
+    package_tiers: {
+      name: string;
+    } | null;
+  }[];
 };
+
+export type ClientSummary = Pick<
+  client,
+  "id" | "business_name" | "email" | "default_pickup_address"
+>;
 
 export type Invoice = {
   id: string;
   invoice_number: string;
   client_id: string;
-  client?: Client;
+  client?: client;
   issue_date: string;
   due_date: string;
   status: "draft" | "sent" | "paid" | "overdue";
@@ -35,15 +54,17 @@ export type Manifests = {
   ref_number: string;
   created_at: string;
   drops_count: number;
-  out_for_delivery_at: string;
-  completed_at: string;
+  operator_id: string | null;
+  subscription_id: string; // add this
   status: string;
-  client: { business_name: string };
+  out_for_delivery_at: string | null;
+  completed_at: string | null;
+  client: { business_name: string } | null;
   operator: { full_name: string } | null;
   subscription: {
     id: string;
     drops_used: number;
-    tier: { name: string; monthly_drops: string } | null;
+    tier: { name: string; monthly_drops: number } | null;
   } | null;
 };
 
@@ -53,8 +74,9 @@ export type DropEntry = {
   recipient_name: string;
   recipient_phone: string;
   out_for_delivery_at: string;
+  delivery_address: string;
   delivered_at: string;
-  address: string;
+  // address: string;
   status:
     | "pending"
     | "delivered"

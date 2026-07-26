@@ -1,9 +1,10 @@
 import { modalBox, primaryBtn, overlay } from "../constants";
-import type { Invoice, Client } from "../types/Types";
+import type { Invoice } from "../types/Types";
 import { useRef } from "react";
 import { STATUS_META } from "../../constants/constants";
 import { InvoiceTemplate } from "../InvoiceTemplate";
 import { useState } from "react";
+import type { ClientSummary } from "../types/Types";
 
 export const InvoiceDetailModal = ({
   invoice,
@@ -12,7 +13,7 @@ export const InvoiceDetailModal = ({
   onStatusChange,
 }: {
   invoice: Invoice;
-  client?: Client;
+  client?: ClientSummary;
   onClose: () => void;
   onStatusChange: (
     invoiceId: string,

@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { supabase } from "../constants/supabaseClient";
+import type { Manifests, DropEntry } from "../components/types/Types";
 
-const formatDateTime = (date) => {
+const formatDateTime = (date?: string | null) => {
   if (!date) return "—";
 
   return new Date(date).toLocaleString("en-GB", {
@@ -47,36 +48,36 @@ export const StatusBadge = ({ status }: { status: string }) => {
   );
 };
 
-const ProgressBar = ({ done, total }: { done: number; total: number }) => {
-  const pct = total > 0 ? Math.min((done / total) * 100, 100) : 0;
-  return (
-    <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-      <div
-        style={{
-          flex: 1,
-          height: 6,
-          background: "#eef0f6",
-          borderRadius: 99,
-          overflow: "hidden",
-          minWidth: 60,
-        }}
-      >
-        <div
-          style={{
-            width: `${pct}%`,
-            height: "100%",
-            background: pct === 100 ? "#16a34a" : "#11117C",
-            borderRadius: 99,
-            transition: "width 0.3s",
-          }}
-        />
-      </div>
-      <span style={{ fontSize: 11, color: "#6b7280", whiteSpace: "nowrap" }}>
-        {done}/{total}
-      </span>
-    </div>
-  );
-};
+// const ProgressBar = ({ done, total }: { done: number; total: number }) => {
+//   const pct = total > 0 ? Math.min((done / total) * 100, 100) : 0;
+//   return (
+//     <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+//       <div
+//         style={{
+//           flex: 1,
+//           height: 6,
+//           background: "#eef0f6",
+//           borderRadius: 99,
+//           overflow: "hidden",
+//           minWidth: 60,
+//         }}
+//       >
+//         <div
+//           style={{
+//             width: `${pct}%`,
+//             height: "100%",
+//             background: pct === 100 ? "#16a34a" : "#11117C",
+//             borderRadius: 99,
+//             transition: "width 0.3s",
+//           }}
+//         />
+//       </div>
+//       <span style={{ fontSize: 11, color: "#6b7280", whiteSpace: "nowrap" }}>
+//         {done}/{total}
+//       </span>
+//     </div>
+//   );
+// };
 
 export const ManifestDrawer = ({
   manifest,
@@ -121,9 +122,12 @@ export const ManifestDrawer = ({
 
   const deliveredCount = drops.filter((d) => d.status === "delivered").length;
   const failedCount = drops.filter((d) => d.status === "failed").length;
-  const pendingCount = drops.filter((d) => d.status === "pending").length;
+  // const pendingCount = drops.filter((d) => d.status === "pending").length;
 
-  const statusColor = {
+  const statusColor: Record<
+    "pending" | "rider_assigned" | "out_for_delivery" | "delivered" | "failed",
+    { bg: string; color: string }
+  > = {
     pending: { bg: "#fff7ed", color: "#92400e" },
     rider_assigned: { bg: "#fff7ed", color: "#92400e" },
     out_for_delivery: { bg: "#fff7ed", color: "#92400e" },

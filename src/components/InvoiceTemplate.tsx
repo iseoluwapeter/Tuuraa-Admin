@@ -1,42 +1,12 @@
 import { fmt, fmtDate } from "../constants/constants";
-
-type InvoiceItem = {
-  id: string;
-  description: string;
-  quantity: number;
-  unit_price: number;
-};
-
-type Client = {
-  id: string;
-  full_name: string;
-  email?: string;
-  address?: string;
-};
-
-type Invoice = {
-  id: string;
-  invoice_number: string;
-  client_id: string;
-  client?: Client;
-  issue_date: string;
-  due_date: string;
-  status: "draft" | "sent" | "paid" | "overdue";
-  items: InvoiceItem[];
-  notes?: string;
-  subtotal: number;
-  tax_rate: number;
-  total: number;
-  created_by: string;
-  created_at: string;
-};
+import type { Invoice, InvoiceItem, ClientSummary } from "./types/Types";
 
 export const InvoiceTemplate = ({
   invoice,
   client,
 }: {
   invoice: Partial<Invoice> & { items: InvoiceItem[] };
-  client?: Client;
+  client?: ClientSummary;
 }) => {
   const subtotal = invoice.items.reduce(
     (s, i) => s + i.quantity * i.unit_price,
@@ -141,16 +111,16 @@ export const InvoiceTemplate = ({
           BILL TO
         </div>
         <div style={{ fontSize: "16px", fontWeight: 600 }}>
-          {client?.full_name ?? "—"}
+          {client?.business_name ?? "—"}
         </div>
         {client?.email && (
           <div style={{ fontSize: "12px", color: "#6B7280" }}>
             {client.email}
           </div>
         )}
-        {client?.address && (
+        {client?.default_pickup_address && (
           <div style={{ fontSize: "12px", color: "#6B7280" }}>
-            {client.address}
+            {client.default_pickup_address}
           </div>
         )}
       </div>

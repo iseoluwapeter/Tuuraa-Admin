@@ -13,22 +13,19 @@ import {
 
 type ClientRow = {
   id: string;
-  full_name: string;
-  email: string;
-  contact: string;
-  assigned_coordinator: string;
-  address: string;
-  profiles?: {
-    full_name: string;
-  } | null;
+  business_name: string;
+  email: string | null;
+  phone: string;
+  default_pickup_address: string | null;
+  account_manager_id: string | null;
 };
 
 type FormData = {
-  fullname: string;
+  business_name: string;
   email: string;
-  contact: string;
-  assigned_coordinator: string;
-  address: string;
+  phone: string;
+  default_pickup_address: string;
+  account_manager_id: string;
 };
 
 type Props = {
@@ -50,11 +47,11 @@ export const EditClientModal = ({
   onSuccess,
 }: Props) => {
   const [formData, setFormData] = useState<FormData>({
-    fullname: "",
+    business_name: "",
     email: "",
-    contact: "bike",
-    assigned_coordinator: "",
-    address: "",
+    phone: "bike",
+    account_manager_id: "",
+    default_pickup_address: "",
   });
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -76,11 +73,11 @@ export const EditClientModal = ({
   useEffect(() => {
     if (client) {
       setFormData({
-        fullname: client.full_name ?? "",
-        contact: client.contact ?? "",
-        email: client.email,
-        address: client.address ?? "",
-        assigned_coordinator: client.assigned_coordinator ?? "",
+        business_name: client.business_name ?? "",
+        phone: client.phone ?? "",
+        email: client.email ?? "",
+        default_pickup_address: client.default_pickup_address ?? "",
+        account_manager_id: client.account_manager_id ?? "",
       });
       setError(null);
     }
@@ -93,7 +90,7 @@ export const EditClientModal = ({
 
   const handleSubmit = async () => {
     setError(null);
-    if (!formData.fullname.trim()) {
+    if (!formData.business_name.trim()) {
       setError("Full name is required.");
       return;
     }
@@ -105,11 +102,11 @@ export const EditClientModal = ({
       const { error: clientError } = await supabase
         .from("clients")
         .update({
-          full_name: formData.fullname.trim(),
-          contact: formData.contact.trim() || null,
-          email: formData.email.trim(),
-          assigned_coordinator: formData.assigned_coordinator.trim(),
-          address: formData.address.trim(),
+          business_name: formData.business_name,
+          email: formData.email,
+          phone: formData.phone,
+          default_pickup_address: formData.default_pickup_address,
+          account_manager_id: formData.account_manager_id || null,
         })
         .eq("id", client.id);
 
@@ -128,7 +125,7 @@ export const EditClientModal = ({
   return (
     <ModalShell
       title="Edit Operator"
-      subtitle={`Editing details for ${client.full_name}`}
+      subtitle={`Editing details for ${client.business_name}`}
       onClose={handleClose}
     >
       {error && <ErrorBanner message={error} />}
@@ -138,9 +135,12 @@ export const EditClientModal = ({
           <input
             style={inputStyle}
             placeholder="e.g. Emeka Okonkwo"
-            value={formData.fullname}
+            value={formData.business_name}
             onChange={(e) =>
-              setFormData((f) => ({ ...f, fullname: e.target.value }))
+              setFormData((f) => ({
+                ...f,
+                fullname: e.target.value,
+              }))
             }
           />
         </Field>
@@ -150,9 +150,9 @@ export const EditClientModal = ({
             style={inputStyle}
             type="tel"
             placeholder="+234 801 234 5678"
-            value={formData.contact}
+            value={formData.phone}
             onChange={(e) =>
-              setFormData((f) => ({ ...f, phoneNo: e.target.value }))
+              setFormData((f) => ({ ...f, phone: e.target.value }))
             }
           />
         </Field>
@@ -176,20 +176,23 @@ export const EditClientModal = ({
             <input
               style={inputStyle}
               placeholder="e.g. Lekki Phase 1"
-              value={formData.address}
+              value={formData.default_pickup_address}
               onChange={(e) =>
-                setFormData((f) => ({ ...f, address: e.target.value }))
+                setFormData((f) => ({
+                  ...f,
+                  default_pickup_address: e.target.value,
+                }))
               }
             />
           </Field>
           <Field label="Assigned Coordinator">
             <select
               style={inputStyle}
-              value={formData.assigned_coordinator}
+              value={formData.account_manager_id}
               onChange={(e) =>
                 setFormData((f) => ({
                   ...f,
-                  assigned_coordinator: e.target.value,
+                  account_manager_id: e.target.value,
                 }))
               }
             >

@@ -1,7 +1,5 @@
 import { useEffect, useState, useCallback } from "react";
 import {
-  AreaChart,
-  Area,
   BarChart,
   Bar,
   XAxis,
@@ -14,9 +12,9 @@ import {
 import { supabase } from "../constants/supabaseClient";
 import { FiUsers, FiUserCheck, FiRefreshCw } from "react-icons/fi";
 import { StatCard } from "../components/StatCard";
-import { FaMoneyBill } from "react-icons/fa";
+// import { FaMoneyBill } from "react-icons/fa";
 import { FaMoneyBill1 } from "react-icons/fa6";
-import { number } from "framer-motion";
+// import { number } from "framer-motion";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -121,9 +119,7 @@ const Dashboard = () => {
         invoicesRes,
       ] = await Promise.all([
         supabase.from("clients").select("id, created_at", { count: "exact" }),
-        supabase
-          .from("operators")
-          .select("id, created_at", { count: "exact" }),
+        supabase.from("operators").select("id, created_at", { count: "exact" }),
         supabase
           .from("users")
           .select("id, created_at", { count: "exact" })
@@ -161,7 +157,7 @@ const Dashboard = () => {
       });
       console.log(invoicesRes);
 
-      const recentjobs = recentJobRes.data ?? [];
+      // const recentjobs = recentJobRes.data ?? [];
       const allJobs = allJobsRes.data ?? [];
       console.log("total jobs", allJobsRes.data);
 

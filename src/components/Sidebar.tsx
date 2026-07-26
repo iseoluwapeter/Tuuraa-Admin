@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { RxDashboard } from "react-icons/rx";
 import { FiUsers, FiUserCheck } from "react-icons/fi";
 import { MdWorkOutline, MdArticle } from "react-icons/md";
-import { HiOutlineUserGroup } from "react-icons/hi";
 import { IoMdClose } from "react-icons/io";
 import { HiMenu, HiOutlineLogout } from "react-icons/hi";
 import { NavLink, useNavigate } from "react-router-dom";
@@ -40,13 +39,13 @@ const allMenuItems: MenuItem[] = [
     path: "/operators",
     roles: ["admin", "coordinator"],
   },
-  {
-    id: 4,
-    icon: <HiOutlineUserGroup size={20} />,
-    title: "Coordinators",
-    path: "/coordinators",
-    roles: ["admin"],
-  },
+  // {
+  //   id: 4,
+  //   icon: <HiOutlineUserGroup size={20} />,
+  //   title: "Coordinators",
+  //   path: "/coordinators",
+  //   roles: ["admin"],
+  // },
   {
     id: 5,
     icon: <MdWorkOutline size={20} />,
